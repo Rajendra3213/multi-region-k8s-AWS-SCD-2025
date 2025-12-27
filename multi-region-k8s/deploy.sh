@@ -15,7 +15,7 @@ echo "Primary deployment complete!"
 echo ""
 echo "Deploying to Secondary Region ($SECONDARY_REGION)..."
 aws eks update-kubeconfig --name $SECONDARY_CLUSTER --region $SECONDARY_REGION
-kubectl apply -f k8s-manifests/deployment.yaml
+kubectl apply -f k8s-manifests/deployment-secondary.yaml
 echo "Secondary deployment complete!"
 
 echo ""

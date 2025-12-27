@@ -33,9 +33,9 @@ module "eks_cluster" {
   service_name    = "blue"
   cluster_version = "1.34"
 
-  argocd_route53_weight      = "100"
-  route53_weight             = "100"
-  ecsfrontend_route53_weight = "100"
+  argocd_route53_weight      = "0"
+  route53_weight             = "0"
+  ecsfrontend_route53_weight = "0"
 
   environment_name    = var.environment_name
   hosted_zone_name    = var.hosted_zone_name

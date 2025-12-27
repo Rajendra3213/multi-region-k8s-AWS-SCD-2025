@@ -6,9 +6,9 @@ data:
   index.html: |
     <!DOCTYPE html>
     <html>
-    <head><title>Region: PRIMARY</title></head>
+    <head><title>Region: SECONDARY</title></head>
     <body style="font-family: Arial; text-align: center; padding: 50px;">
-      <h1 style="color: #ff9900;">🌏 Region: ap-south-1 (PRIMARY)</h1>
+      <h1 style="color: #00a1c9;">🌏 Region: ap-northeast-1 (SECONDARY)</h1>
       <h2>Pod: <span id="hostname"></span></h2>
       <p>Timestamp: <span id="time"></span></p>
       <script>

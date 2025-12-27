@@ -208,7 +208,7 @@ resource "aws_globalaccelerator_accelerator" "main" {
 
 resource "aws_globalaccelerator_listener" "main" {
   accelerator_arn = aws_globalaccelerator_accelerator.main.id
-  client_affinity = "SOURCE_IP"
+  client_affinity = "NONE"  # Changed from SOURCE_IP to allow traffic distribution
   protocol        = "TCP"
 
   port_range {
@@ -223,7 +223,7 @@ resource "aws_globalaccelerator_endpoint_group" "primary" {
   listener_arn = aws_globalaccelerator_listener.main.id
 
   endpoint_group_region   = local.regions.primary
-  traffic_dial_percentage = 100
+  traffic_dial_percentage = 0
 
   endpoint_configuration {
     endpoint_id = "arn:aws:elasticloadbalancing:ap-south-1:488309743291:loadbalancer/net/aabba6d93484e41c5b7b2c59b502acdf/27740130f7be85f2"
@@ -235,7 +235,7 @@ resource "aws_globalaccelerator_endpoint_group" "secondary" {
   listener_arn = aws_globalaccelerator_listener.main.id
 
   endpoint_group_region   = local.regions.secondary
-  traffic_dial_percentage = 0
+  traffic_dial_percentage = 100
 
   endpoint_configuration {
     endpoint_id = "arn:aws:elasticloadbalancing:ap-northeast-1:488309743291:loadbalancer/net/a4d05e2b4ae6f4a359f36484771f4c90/84bfb496c79a3373"

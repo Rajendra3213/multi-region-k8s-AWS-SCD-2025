@@ -139,6 +139,16 @@ footer: AWS SCD 2025, Rajendra Acharya and Aaditya Pageni
 
 ---
 
+![alt text](image-8.png)
+![alt text](image-9.png)
+
+---
+
+<img src="image-10.png" alt="alt text" height="550">
+
+
+---
+
 # Blue Green Deployment ?
 
 ---
