@@ -193,3 +193,8 @@ footer: AWS SCD 2025, Rajendra Acharya and Aaditya Pageni
 
 ---
 ![alt text](image-7.png)
+
+---
+# Thanks
+
+## Questions?
