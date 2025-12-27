@@ -31,7 +31,7 @@ module "eks_cluster" {
 
   aws_region      = var.aws_region
   service_name    = "blue"
-  cluster_version = "1.31"
+  cluster_version = "1.34"
 
   argocd_route53_weight      = "100"
   route53_weight             = "100"

@@ -10,13 +10,13 @@ terraform {
 
 locals {
   regions = {
-    primary   = "us-east-1"
-    secondary = "us-west-2"
+    primary   = var.primary_region
+    secondary = var.secondary_region
   }
   
   common_tags = {
-    Project     = "multi-region-eks"
-    Environment = "production"
+    Project     = var.project_name
+    Environment = var.environment
     ManagedBy   = "terraform"
   }
 }
@@ -41,7 +41,7 @@ module "vpc_primary" {
   }
 
   name_prefix           = "primary-region"
-  vpc_cidr              = "10.0.0.0/16"
+  vpc_cidr              = var.primary_vpc_cidr
   private_subnet_count  = 3
   public_subnet_count   = 3
   enable_nat_gateway    = true
@@ -58,7 +58,7 @@ module "vpc_secondary" {
   }
 
   name_prefix           = "secondary-region"
-  vpc_cidr              = "10.1.0.0/16"
+  vpc_cidr              = var.secondary_vpc_cidr
   private_subnet_count  = 3
   public_subnet_count   = 3
   enable_nat_gateway    = true
@@ -74,7 +74,7 @@ module "eks_primary" {
     aws = aws.primary
   }
 
-  cluster_name                        = "primary-eks-cluster"
+  cluster_name                        = "primary-cluster"
   cluster_version                     = var.kubernetes_version
   vpc_id                              = module.vpc_primary.vpc_id
   subnet_ids                          = concat(module.vpc_primary.private_subnet_ids, module.vpc_primary.public_subnet_ids)
@@ -83,10 +83,10 @@ module "eks_primary" {
   cluster_endpoint_public_access      = true
   cluster_endpoint_public_access_cidrs = ["0.0.0.0/0"]
   
-  node_group_instance_types = ["t3.medium"]
-  node_group_desired_size   = 3
-  node_group_max_size       = 6
-  node_group_min_size       = 1
+  node_group_instance_types = var.node_instance_types
+  node_group_desired_size   = var.node_desired_size
+  node_group_max_size       = var.node_max_size
+  node_group_min_size       = var.node_min_size
   
   tags = local.common_tags
 }
@@ -98,7 +98,7 @@ module "eks_secondary" {
     aws = aws.secondary
   }
 
-  cluster_name                        = "secondary-eks-cluster"
+  cluster_name                        = "secondary-cluster"
   cluster_version                     = var.kubernetes_version
   vpc_id                              = module.vpc_secondary.vpc_id
   subnet_ids                          = concat(module.vpc_secondary.private_subnet_ids, module.vpc_secondary.public_subnet_ids)
@@ -107,10 +107,10 @@ module "eks_secondary" {
   cluster_endpoint_public_access      = true
   cluster_endpoint_public_access_cidrs = ["0.0.0.0/0"]
   
-  node_group_instance_types = ["t3.medium"]
-  node_group_desired_size   = 3
-  node_group_max_size       = 6
-  node_group_min_size       = 1
+  node_group_instance_types = var.node_instance_types
+  node_group_desired_size   = var.node_desired_size
+  node_group_max_size       = var.node_max_size
+  node_group_min_size       = var.node_min_size
   
   tags = local.common_tags
 }
@@ -193,33 +193,6 @@ resource "aws_ec2_transit_gateway_peering_attachment_accepter" "secondary_accept
   })
 }
 
-# Application Load Balancers
-module "alb_primary" {
-  source = "../modules/alb"
-  providers = {
-    aws = aws.primary
-  }
-
-  name       = "primary-alb"
-  vpc_id     = module.vpc_primary.vpc_id
-  subnet_ids = module.vpc_primary.public_subnet_ids
-  
-  tags = local.common_tags
-}
-
-module "alb_secondary" {
-  source = "../modules/alb"
-  providers = {
-    aws = aws.secondary
-  }
-
-  name       = "secondary-alb"
-  vpc_id     = module.vpc_secondary.vpc_id
-  subnet_ids = module.vpc_secondary.public_subnet_ids
-  
-  tags = local.common_tags
-}
-
 # Global Accelerator
 resource "aws_globalaccelerator_accelerator" "main" {
   name            = "multi-region-accelerator"
@@ -244,14 +217,16 @@ resource "aws_globalaccelerator_listener" "main" {
   }
 }
 
+# Note: After deploying K8s service, get NLB ARNs and update endpoint_id below
+# Run: ./get-nlb-arns.sh
 resource "aws_globalaccelerator_endpoint_group" "primary" {
   listener_arn = aws_globalaccelerator_listener.main.id
 
   endpoint_group_region   = local.regions.primary
-  traffic_dial_percentage = 0
+  traffic_dial_percentage = 100
 
   endpoint_configuration {
-    endpoint_id = "arn:aws:elasticloadbalancing:us-east-1:488309743291:loadbalancer/net/a70b2a1f6b7614cf091734c9c519f3a5/c193f1fec5cf6585"
+    endpoint_id = "arn:aws:elasticloadbalancing:ap-south-1:488309743291:loadbalancer/net/aabba6d93484e41c5b7b2c59b502acdf/27740130f7be85f2"
     weight      = 100
   }
 }
@@ -260,10 +235,10 @@ resource "aws_globalaccelerator_endpoint_group" "secondary" {
   listener_arn = aws_globalaccelerator_listener.main.id
 
   endpoint_group_region   = local.regions.secondary
-  traffic_dial_percentage = 100
+  traffic_dial_percentage = 0
 
   endpoint_configuration {
-    endpoint_id = "arn:aws:elasticloadbalancing:us-west-2:488309743291:loadbalancer/net/a3637f1522b8845968342e61d5f0d8e2/5753de4cf3aa6aca"
+    endpoint_id = "arn:aws:elasticloadbalancing:ap-northeast-1:488309743291:loadbalancer/net/a4d05e2b4ae6f4a359f36484771f4c90/84bfb496c79a3373"
     weight      = 100
   }
 }

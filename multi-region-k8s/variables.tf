@@ -68,3 +68,15 @@ variable "domain_name" {
   type        = string
   default     = "example.com"
 }
+
+variable "primary_nlb_arn" {
+  description = "Primary region NLB ARN from Kubernetes service"
+  type        = string
+  default     = ""
+}
+
+variable "secondary_nlb_arn" {
+  description = "Secondary region NLB ARN from Kubernetes service"
+  type        = string
+  default     = ""
+}

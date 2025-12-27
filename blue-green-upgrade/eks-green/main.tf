@@ -31,11 +31,11 @@ module "eks_cluster" {
 
   aws_region      = var.aws_region
   service_name    = "green"
-  cluster_version = "1.31" # Here, we deploy the cluster with the N+1 Kubernetes Version
+  cluster_version = "1.34" # Here, we deploy the cluster with the N+1 Kubernetes Version
 
-  argocd_route53_weight      = "0" # We control with theses parameters how we send traffic to the workloads in the new cluster
-  route53_weight             = "0"
-  ecsfrontend_route53_weight = "0"
+  argocd_route53_weight      = "100" # We control with theses parameters how we send traffic to the workloads in the new cluster
+  route53_weight             = "100"
+  ecsfrontend_route53_weight = "100"
 
   environment_name    = var.environment_name
   hosted_zone_name    = var.hosted_zone_name
