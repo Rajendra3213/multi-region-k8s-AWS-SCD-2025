@@ -198,3 +198,7 @@ footer: AWS SCD 2025, Rajendra Acharya and Aaditya Pageni
 # Thanks
 
 ## Questions?
+
+---
+# Let's talk infrastructures
+<img src="image-11.png" alt="alt text" height="400">
